@@ -2,10 +2,37 @@ let formEl = document.querySelector("#task-form");
 let tasksToDoEl = document.querySelector("#tasks-to-do");
 let taskIdCounter = 0;
 let pageContentEl = document.querySelector("#page-content");
+let tasksInProgressEl = document.querySelector("#tasks-in-progress");
+let tasksCompletedEl = document.querySelector("#tasks-completed");
+
+let taskStatusChangeHandler = function(event) {
+    let taskId = event.target.getAttribute("data-task-id");
+    let statusValue = event.target.value.toLowerCase();
+    let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+
+    if(statusValue === "to do") {
+        tasksToDoEl.appendChild(taskSelected);
+    } else if (statusValue === "in progress") {
+        tasksInProgressEl.appendChild(taskSelected);
+    } else if(statusValue === "completed") {
+        tasksCompletedEl.appendChild(taskSelected);
+    }
+};
 
 let deleteTask = function(taskId) {
     let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
     taskSelected.remove();
+};
+
+let completeEditTask = function(taskName, taskType, taskId) {
+    let taskSelected = document.querySelector(".task-item[data-task-id'" + taskId + "']");
+    taskSelected.querySelector("h3.task-name").textContent = taskName;
+    taskSelected.querySelector("span.task-type").textContent = taskType;
+    alert("Task Updated!");
+
+    formEl.removeAttribute("data-task-id");
+    document.querySelector("#save-task").textContent = "Add Task";
+
 };
 
 let editTask = function(taskId) {
@@ -83,7 +110,6 @@ let createTaskEl = function(taskDataObj) {
     taskIdCounter++;
 };
 
-
 let taskFormHandler = function(e){
     e.preventDefault();
     let taskNameInput = document.querySelector("input[name='task-name']").value;
@@ -92,16 +118,28 @@ let taskFormHandler = function(e){
     if(!taskNameInput || !taskTypeInput) {
         alert("You need to fill out the task form!");
         return false;
-    }
+    };
+
+    let isEdit = formEl.hasAttribute("data-task-id");
 
     let taskDataObj = {
         name: taskNameInput,
         type: taskTypeInput
     };
 
-    createTaskEl(taskDataObj);
+    if(isEdit) {
+        let taskId = formEl.getAttribute("data-task-id");
+        completeEditTask(taskNameInput, taskTypeInput, taskId);
+    } else {
+        let taskDataObj = {
+            name: taskNameInput,
+            type: taskTypeInput
+        };
+        createTaskEl(taskDataObj);
+    };
     formEl.reset();
 };
 
 formEl.addEventListener("submit", taskFormHandler);
 pageContentEl.addEventListener("click", taskButtonHandler);
+pageContentEl.addEventListener("change", taskStatusChangeHandler);
