@@ -4,6 +4,7 @@ let tasksToDoEl = document.querySelector("#tasks-to-do");
 let tasksInProgressEl = document.querySelector("#tasks-in-progress");
 let tasksCompletedEl = document.querySelector("#tasks-completed");
 let pageContentEl = document.querySelector("#page-content");
+let tasks = [];
 
 let taskStatusChangeHandler = function(event) {
     let taskId = event.target.getAttribute("data-task-id");
@@ -17,11 +18,25 @@ let taskStatusChangeHandler = function(event) {
     } else if(statusValue === "completed") {
         tasksCompletedEl.appendChild(taskSelected);
     }
+
+    for(let i = 0; i < tasks.length; i++) {
+        if(tasks[i].id === parseInt(taskId)) {
+            tasks[i].status = statusValue;
+        }
+    }
 };
 
 let deleteTask = function(taskId) {
     let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
     taskSelected.remove();
+
+    let updatedTaskArr = [];
+    for(let i = 0; i < tasks.length; i++) {
+        if(tasks[i].id !== parseInt(taskId)) {
+            updatedTaskArr.push(tasks[i]);
+        }
+    }
+    tasks = updatedTaskArr;
 };
 
 let completeEditTask = function(taskName, taskType, taskId) {
@@ -29,11 +44,17 @@ let completeEditTask = function(taskName, taskType, taskId) {
     taskSelected.querySelector("h3.task-name").textContent = taskName;
     taskSelected.querySelector("span.task-type").textContent = taskType;
 
+    for(let i = 0; i <tasks.length; i++) {
+        if(tasks[i].id === parseInt(taskId)){
+            tasks[i].name = taskName;
+            tasks[i].type = taskType;
+        }
+    };
+
     alert("Task Updated!");
 
     formEl.removeAttribute("data-task-id");
     document.querySelector("#save-task").textContent = "Add Task";
-
 };
 
 let editTask = function(taskId) {
@@ -109,6 +130,10 @@ let createTaskEl = function(taskDataObj) {
     let taskActionsEl = createTaskActions(taskIdCounter);
     listItemEl.appendChild(taskActionsEl);
     tasksToDoEl.appendChild(listItemEl);
+
+    taskDataObj.id = taskIdCounter;
+    tasks.push(taskDataObj);
+
     taskIdCounter++;
 };
 
@@ -133,7 +158,8 @@ let taskFormHandler = function(e){
     } else {
         let taskDataObj = {
             name: taskNameInput,
-            type: taskTypeInput
+            type: taskTypeInput,
+            status: "to do",
         };
         createTaskEl(taskDataObj);
     }
