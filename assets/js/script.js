@@ -6,14 +6,33 @@ let pageContentEl = document.querySelector("#page-content");
 let deleteTask = function(taskId) {
     let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
     taskSelected.remove();
-}
+};
+
+let editTask = function(taskId) {
+    let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+    let taskName = taskSelected.querySelector("h3.task-name").textContent;
+    console.log(taskName);
+
+    let taskType = taskSelected.querySelector("span.task-type").textContent;
+    console.log(taskType);
+
+    document.querySelector("input[name='task-name'").value = taskName;
+    document.querySelector("select[name='task-type'").value = taskType;
+    document.querySelector("#save-task").textContent = "Save Task";
+    formEl.setAttribute("data-task-id", taskId);
+};
 
 let taskButtonHandler = function(event) {
-    if(event.target.matches(".delete-btn")) {
+    let targetEl = event.target;
+
+    if(targetEl.matches(".edit-btn")) {
+        let taskId = targetEl.getAttribute("data-task-id");
+        editTask(taskId);
+    } else if(targetEl.matches(".delete-btn")) {
         let taskId = event.target.getAttribute("data-task-id");
         deleteTask(taskId);
-    }
-}
+    };
+};
 
 let createTaskActions = function(taskId) {
     let actionContainerEl = document.createElement("div");
@@ -43,10 +62,10 @@ let createTaskActions = function(taskId) {
         statusOptionEl.textContent = statusChoices[i];
         statusOptionEl.setAttribute("value", statusChoices[i]);
         statusSelectEl.appendChild(statusOptionEl);
-    }
+    };
 
     return actionContainerEl;
-}
+};
 
 let createTaskEl = function(taskDataObj) {
     let listItemEl = document.createElement("li");   
