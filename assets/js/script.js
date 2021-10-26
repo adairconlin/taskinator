@@ -6,6 +6,10 @@ let tasksCompletedEl = document.querySelector("#tasks-completed");
 let pageContentEl = document.querySelector("#page-content");
 let tasks = [];
 
+let saveTasks = function() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
 let taskStatusChangeHandler = function(event) {
     let taskId = event.target.getAttribute("data-task-id");
     let statusValue = event.target.value.toLowerCase();
@@ -24,6 +28,8 @@ let taskStatusChangeHandler = function(event) {
             tasks[i].status = statusValue;
         }
     }
+
+    saveTasks();
 };
 
 let deleteTask = function(taskId) {
@@ -37,6 +43,8 @@ let deleteTask = function(taskId) {
         }
     }
     tasks = updatedTaskArr;
+
+    saveTasks();
 };
 
 let completeEditTask = function(taskName, taskType, taskId) {
@@ -50,20 +58,17 @@ let completeEditTask = function(taskName, taskType, taskId) {
             tasks[i].type = taskType;
         }
     };
-
     alert("Task Updated!");
 
     formEl.removeAttribute("data-task-id");
     document.querySelector("#save-task").textContent = "Add Task";
+    saveTasks();
 };
 
 let editTask = function(taskId) {
     let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
     let taskName = taskSelected.querySelector("h3.task-name").textContent;
-    console.log(taskName);
-
     let taskType = taskSelected.querySelector("span.task-type").textContent;
-    console.log(taskType);
 
     document.querySelector("input[name='task-name'").value = taskName;
     document.querySelector("select[name='task-type'").value = taskType;
@@ -73,7 +78,6 @@ let editTask = function(taskId) {
 
 let taskButtonHandler = function(event) {
     let targetEl = event.target;
-
     if(targetEl.matches(".edit-btn")) {
         let taskId = targetEl.getAttribute("data-task-id");
         editTask(taskId);
@@ -106,7 +110,6 @@ let createTaskActions = function(taskId) {
     actionContainerEl.appendChild(statusSelectEl);
 
     let statusChoices = ["To Do", "In Progress", "Completed"];
-    
     for(let i = 0; i < statusChoices.length; i++) {
         let statusOptionEl = document.createElement("option");
         statusOptionEl.textContent = statusChoices[i];
@@ -135,6 +138,7 @@ let createTaskEl = function(taskDataObj) {
     tasks.push(taskDataObj);
 
     taskIdCounter++;
+    saveTasks();
 };
 
 let taskFormHandler = function(e){
